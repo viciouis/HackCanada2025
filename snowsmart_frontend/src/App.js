@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const Weather = () => {
     const [city, setCity] = useState('');
-    const [weather, setWeather] = useState({ temperature: 'N/A', humidity: 'N/A' });
+    const [weather, setWeather] = useState({ temperature: 'N/A', humidity: 'N/A', snow_24h: 'N/A' });
     const [error, setError] = useState(null);
 
     const fetchWeatherData = async () => {
@@ -11,13 +11,14 @@ const Weather = () => {
             setError('Please enter a city.');
             return;
         }
-        setError(null); // Clear any previous errors
+        setError(null); // Clear previous errors
 
         try {
             const response = await axios.get(`http://localhost:5000/weather?city=${city}`);
             setWeather({
-                temperature: response.data.main.temp, // Extract temperature from API response
-                humidity: response.data.main.humidity // Extract humidity from API response
+                temperature: response.data.temperature,
+                humidity: response.data.humidity,
+                snow_24h: response.data.snow_24h // Already in cm from backend
             });
         } catch (error) {
             console.error('Error fetching weather data:', error);
@@ -41,6 +42,7 @@ const Weather = () => {
             <h2>Weather in {city}</h2>
             <p>Temperature: {weather.temperature}°C</p>
             <p>Humidity: {weather.humidity}%</p>
+            <p>Snow in Next 24h: {weather.snow_24h} cm</p> {/* Display 24hr forecast in cm */}
         </div>
     );
 };
