@@ -1,57 +1,48 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 
-function App() {
-  const [city, setCity] = useState('');
-  const [weatherData, setWeatherData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+const Weather = () => {
+    const [city, setCity] = useState('');
+    const [weather, setWeather] = useState({ temperature: 'N/A', humidity: 'N/A' });
+    const [error, setError] = useState(null);
 
-  const handleCityChange = (e) => {
-    setCity(e.target.value);
-  };
+    const fetchWeatherData = async () => {
+        if (!city) {
+            setError('Please enter a city.');
+            return;
+        }
+        setError(null); // Clear any previous errors
 
-  const fetchWeather = async () => {
-    if (!city) {
-      setError('Please enter a city');
-      return;
-    }
-    setLoading(true);
-    setError('');
-    try {
-      const response = await axios.get(`http://localhost:5000/weather?city=${city}`);
-      setWeatherData(response.data);
-    } catch (err) {
-      setError('Failed to fetch data. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+        try {
+            const response = await axios.get(`http://localhost:5000/weather?city=${city}`);
+            setWeather({
+                temperature: response.data.main.temp, // Extract temperature from API response
+                humidity: response.data.main.humidity // Extract humidity from API response
+            });
+        } catch (error) {
+            console.error('Error fetching weather data:', error);
+            setError('Failed to fetch weather data.');
+        }
+    };
 
-  return (
-    <div>
-      <h1>Weather Information</h1>
-      <input
-        type="text"
-        placeholder="Enter city"
-        value={city}
-        onChange={handleCityChange}
-      />
-      <button onClick={fetchWeather} disabled={loading}>
-        {loading ? 'Loading...' : 'Get Weather'}
-      </button>
-
-      {error && <p>{error}</p>}
-
-      {weatherData && (
+    return (
         <div>
-          <h2>Weather for {city}</h2>
-          <p>Temperature: {weatherData.temp}°C</p>
-          <p>Humidity: {weatherData.humidity}%</p>
-        </div>
-      )}
-    </div>
-  );
-}
+            <h1>Weather App</h1>
+            <input
+                type="text"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                placeholder="Enter city name"
+            />
+            <button onClick={fetchWeatherData}>Get Weather</button>
 
-export default App;
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+
+            <h2>Weather in {city}</h2>
+            <p>Temperature: {weather.temperature}°C</p>
+            <p>Humidity: {weather.humidity}%</p>
+        </div>
+    );
+};
+
+export default Weather;
