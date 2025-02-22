@@ -1,0 +1,21 @@
+version: '3'
+services:
+  backend:
+    build:
+      context: ../snowsmart_backend
+    ports:
+      - "5000:5000"  # Expose backend on port 5000
+    networks:
+      - mynetwork
+
+  frontend:
+    build:
+      context: ../snowsmart_frontend
+    ports:
+      - "80:80"  # Expose frontend on port 80
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge
