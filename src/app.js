@@ -60,7 +60,7 @@ const fetchCitySuggestions = async (query, setSuggestions) => {
 };
 
 const fetchGeminiResponse = async (weather, machinery, setGeminiResponse) => {
-  const prompt = `I have ${machinery || "basic tools"} and expect wind speeds of ${weather.windSpeed} m/s. The temperature is ${weather.temperature}°C. There is ${weather.snow} cm of snow and ${weather.rain} mm of rain in the last hour. The condition is ${weather.condition}. If there isn't enough snow, I don't need to go out. If multiple people are available, suggest a plan for efficient snow removal. Make the recommendations as logical and practical as possible. Be as brief as possible, I do not care if you sound good or not, I just need the information as short as you can give me. DO NOT TELL ME THE MATH BEHIND YOUR LOGIC. At most, you should be telling me when to go out, what machinery to use given my inputs. Be as brief as you possibly can be. If there's not too much snow, use common sense. Just recommend going out at the end (obviously depends on what machinery the user has). If you think it's more logical to go out more than once (ex. once in the middle of snowfall so you do not have to do too much snow in 1 go), recommend the times to go out. Try to use a shovel as much as you can while being logical (example: I don't want to use a snow blower on like 3cm of snow, but I do not want to use a shovel on 15cm of snow). Find a good balance. Keep in mind rain and snow make slush, so depending on those factors I may not even need to shovel anything. Prefer to shovel over snowblower or machines, especially on smaller amounts of snow. Be slightly polite (nothing weird).`;
+  const prompt = `I have ${machinery || "basic tools"} and expect wind speeds of ${weather.windSpeed} m/s. The temperature is ${weather.temperature}°C. There is ${weather.snow} cm of snow and ${weather.rain} mm of rain in the last hour. The condition is ${weather.condition}. If there isn't enough snow, I don't need to go out. If multiple people are available, suggest a plan for efficient snow removal. Make the recommendations as logical and practical as possible. Be as brief as possible, I do not care if you sound good or not, I just need the information as short as you can give me. DO NOT TELL ME THE MATH BEHIND YOUR LOGIC. At most, you should be telling me when to go out, what machinery to use given my inputs. Be as brief as you possibly can be. If there's not too much snow, use common sense. Just recommend going out at the end (obviously depends on what machinery the user has). If you think it's more logical to go out more than once (ex. once in the middle of snowfall so you do not have to do too much snow in 1 go), recommend the times to go out. Try to use a shovel as much as you can while being logical (example: I don't want to use a snow blower on like 3cm of snow, but I do not want to use a shovel on 15cm of snow). Find a good balance. Keep in mind rain and snow make slush, so depending on those factors I may not even need to shovel anything. Prefer to shovel over snowblower or machines, especially on smaller amounts of snow. Be slightly polite (nothing weird). If you believe there are too many people for the small amount of snow, say something like only 1 person needed or something.`;
   try {
     const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + process.env.REACT_APP_GEMINI_API_KEY, {
       method: "POST",
@@ -118,17 +118,23 @@ const SnowSmartApp = () => {
                 fullWidth
                 variant="outlined"
                 placeholder="Enter city name"
-                sx={{ backgroundColor: "#2F3136", borderRadius: "8px", color: "#fff", padding: "10px" }}
+                sx={{
+                  backgroundColor: "#2F3136",
+                  borderRadius: "8px",
+                  "& input": {
+                    color: "#fff", // Change the text color to white
+                  },
+                }}
               />
             )}
           />
 
           {weather && (
             <Card sx={{ backgroundColor: "#2F3136", color: "#fff", padding: "16px", borderRadius: "8px", marginTop: "20px" }}>
-              <Typography variant="h5" textAlign="center" sx={{ fontWeight: "bold", fontSize: "1.25rem"}}>
+              <Typography variant="h5" textAlign="center" sx={{ fontWeight: "bold", fontSize: "1.25rem" }}>
                 🌡 {weather.temperature}°C | ❄️ Snow: {weather.snow} cm | 🌧️ Rain: {weather.rain} mm
               </Typography>
-              <Typography variant="h5" textAlign="center" sx={{ fontWeight: "bold", marginTop: "8px", fontSize:"1.25rem"}}>
+              <Typography variant="h5" textAlign="center" sx={{ fontWeight: "bold", marginTop: "8px", fontSize: "1.25rem" }}>
                 {weather.condition === "Snow" ? "❄️Snowing" :
                  weather.condition === "Rain" ? "🌧️Raining" :
                  weather.condition === "Clear" ? "☀️Clear" :
@@ -151,7 +157,14 @@ const SnowSmartApp = () => {
             placeholder="Enter available resources..."
             value={machinery}
             onChange={(e) => setMachinery(e.target.value)}
-            sx={{ backgroundColor: "#2F3136", borderRadius: "8px", color: "#fff", padding: "10px", marginBottom: "16px" }}
+            sx={{
+              backgroundColor: "#2F3136",
+              borderRadius: "8px",
+              marginBottom: "16px",
+              "& input": {
+                color: "#fff", // Change the text color to white
+              },
+            }}
           />
 
           <Button
