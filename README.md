@@ -4,7 +4,7 @@ SnowSmart is a smart snow removal assistant that helps you plan and optimize sno
 
 ## Features:
 - **City Input**: Enter any city name, and the app will fetch current weather data.
-- **Weather Forecast**: Displays temperature, wind speed, snow accumulation, and rain data.
+- **Weather Forecast**: Displays temperature, snow accumulation, and rain data.
 - **Available Resources**: You can input available snow removal machinery to receive a tailored snow removal plan.
 - **AI-Based Recommendations**: Based on the weather data and available resources, the app generates a snow removal schedule using a powerful AI model (Gemini API).
 
