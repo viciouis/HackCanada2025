@@ -4,7 +4,7 @@ import axios from 'axios';
 const Weather = () => {
     const [city, setCity] = useState('');
     const [machinery, setMachinery] = useState('');
-    const [weather, setWeather] = useState({ temperature: 'N/A', humidity: 'N/A', snow_24h: 'N/A' });
+    const [weather, setWeather] = useState({ temperature: 'N/A', snow_24h: 'N/A', rain_24h: 'N/A', wind_speed: 'N/A' });
     const [schedule, setSchedule] = useState(''); 
     const [error, setError] = useState(null);
 
@@ -22,8 +22,9 @@ const Weather = () => {
 
             setWeather({
                 temperature: response.data.temperature,
-                humidity: response.data.humidity,
-                snow_24h: response.data.snow_24h
+                snow_24h: response.data.snow_24h,
+                rain_24h: response.data.rain_24h,
+                wind_speed: response.data.wind_speed
             });
 
             if (response.data.geminiResponse?.text) {
@@ -49,8 +50,9 @@ const Weather = () => {
 
             <h2>Weather in {city}</h2>
             <p>Temperature: {weather.temperature}°C</p>
-            <p>Humidity: {weather.humidity}%</p>
             <p>Snow in Next 24h: {weather.snow_24h} cm</p>
+            <p>Rain in Next 24h: {weather.rain_24h} mm</p>
+            <p>Wind Speed: {weather.wind_speed} m/s</p>
 
             <h3>Gemini Snow Removal Schedule:</h3>
             <p>{schedule}</p> 

@@ -1,15 +1,13 @@
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
+const { WEATHER_API_KEY, GEMINI_API_KEY } = require('./config');  // Import keys
 
 const app = express();
 const port = 5000;
 
 app.use(cors());
 app.use(express.json());
-
-const WEATHER_API_KEY = 'YOUR_API_KEY';
-const GEMINI_API_KEY = 'YOUR_API_KEY';
 
 // Root route
 app.get('/', (req, res) => {
