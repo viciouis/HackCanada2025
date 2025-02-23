@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  snowsmart-app:
+    build: .
+    container_name: snowsmart-app
+    ports:
+      - "3000:3000"  # Map port 3000 in container to port 3000 on localhost
+    environment:
+      - NODE_ENV=development
+      - HOST=0.0.0.0  # Make React app accessible on all interfaces
+    volumes:
+      - .:/usr/src/app
+      - .env:/usr/src/app/.env  # Mount .env file into the container
+    command: npm start
