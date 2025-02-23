@@ -72,7 +72,7 @@ app.post('/generate-schedule', async (req, res) => {
             return res.json({ temperature, humidity, snow_24h, rain_24h, wind_speed });
         }
 
-        const prompt = `I have ${machinery} and expect ${snow_24h} cm of snowfall, ${rain_24h} mm of rain, and wind speeds of ${wind_speed} m/s in the next 24 hours. The temperature is ${temperature}°C with a humidity of ${humidity}%. When is the best time to remove the snow for efficiency and safety? Provide a simple and brief snow-removal schedule. Your response should be maximum 1 sentence including acknowledgement, and recommendation on when to go out. Be as brief and to the point as you can.`;
+        const prompt = `I have ${machinery} and expect ${snow_24h} cm of snowfall, ${rain_24h} mm of rain, and wind speeds of ${wind_speed} m/s in the next 24 hours. The temperature is ${temperature}°C . When is the best time to remove the snow for efficiency and safety? Provide a simple and brief snow-removal schedule. Your response should be maximum 1 sentence including acknowledgement, and recommendation on when to go out. Be as brief and to the point as you can. Use common sense, if theres small amount of snow, no need for snow blower (can just use shovel). Otherside, if theres a lot of snow, no point in people shoveling too much, mainly focus use on snow blower. Try to make your response as logically oriented as possible, and make sure it makes sense. Keep your response short, you do not have to talk to each point in my given prompt, keep it concise with just the required info ONLY`;
 
         console.log('Sending request to Gemini API:', { contents: [{ parts: [{ text: prompt }] }] });
 
