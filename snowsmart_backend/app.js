@@ -8,8 +8,6 @@ const port = 5000;
 app.use(cors());
 app.use(express.json());
 
-//const WEATHER_API_KEY = '781cf2cb4d56c7a0239a8e8e117a715d';
-//const GEMINI_API_KEY = 'AIzaSyArc7rRPl0WXuCuCTQmYav7qQlHEXnk6Go';
 const { WEATHER_API_KEY, GEMINI_API_KEY } = require('./config');  // Import keys
 
 // Root route
