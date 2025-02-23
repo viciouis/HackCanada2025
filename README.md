@@ -33,10 +33,10 @@ snow-smart/
 cd $YOUR_PATH
 git clone https://github.com/your-username/snow-smart.git
 cd snow-smart
-npm install (sudo npm install for mac)
+npm install #(sudo npm install for mac)
 echo "REACT_APP_OPENWEATHER_API_KEY=your_openweathermap_api_key" > .env
 echo "REACT_APP_GEMINI_API_KEY=your_gemini_api_key" >> .env
-docker compose up --build (or npm start for non-docker users)
+docker compose up --build #(or npm start for non-docker users)
 ```
 App is now available at localhost:3000
 
