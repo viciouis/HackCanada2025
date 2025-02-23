@@ -26,14 +26,15 @@ const StyledCard = styled(Card)({
 const fetchWeatherData = async (city, setWeather) => {
   try {
     const cityName = city.split(",")[0].trim();
-    const apiKey = process.env.REACT_APP_OPENWEATHER_API_KEY; // Use the environment variable
-    const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}&units=metric`);
+    const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${process.env.REACT_APP_OPENWEATHER_API_KEY}&units=metric`);
     const data = await response.json();
     if (data.main) {
       setWeather({
         temperature: data.main.temp,
         windSpeed: data.wind.speed,
-        condition: data.weather[0].description,
+        snow: data.snow ? data.snow["1h"] : 0, // Get snow from the response if available
+        rain: data.rain ? data.rain["1h"] : 0, // Get rain data if available
+        condition: data.weather[0].main || "Clear", // Explicitly check condition
       });
     }
   } catch (error) {
@@ -59,24 +60,24 @@ const fetchCitySuggestions = async (query, setSuggestions) => {
 };
 
 const fetchGeminiResponse = async (weather, machinery, setGeminiResponse) => {
-  const prompt = `I have ${machinery || "basic tools"} and expect wind speeds of ${weather.windSpeed} m/s. The temperature is ${weather.temperature}°C. The condition is ${weather.condition}. When is the best time to remove the snow for efficiency and safety? Provide a simple and brief snow-removal schedule.`;
+  const prompt = `I have ${machinery || "basic tools"} and expect wind speeds of ${weather.windSpeed} m/s. The temperature is ${weather.temperature}°C. There is ${weather.snow} cm of snow and ${weather.rain} mm of rain in the last hour. The condition is ${weather.condition}. If there isn't enough snow, I don't need to go out. If multiple people are available, suggest a plan for efficient snow removal. Make the recommendations as logical and practical as possible. Be as brief as possible, I do not care if you sound good or not, I just need the information as short as you can give me. DO NOT TELL ME THE MATH BEHIND YOUR LOGIC. At most, you should be telling me when to go out, what machinery to use given my inputs. Be as brief as you possibly can be. If there's not too much snow, use common sense. Just recommend going out at the end (obviously depends on what machinery the user has). If you think it's more logical to go out more than once (ex. once in the middle of snowfall so you do not have to do too much snow in 1 go), recommend the times to go out. Try to use a shovel as much as you can while being logical (example: I don't want to use a snow blower on like 3cm of snow, but I do not want to use a shovel on 15cm of snow). Find a good balance. Keep in mind rain and snow make slush, so depending on those factors I may not even need to shovel anything. Prefer to shovel over snowblower or machines, especially on smaller amounts of snow. Be slightly polite (nothing weird).`;
   try {
-    const apiKey = process.env.REACT_APP_GEMINI_API_KEY; // Use the environment variable
-    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + apiKey, {
+    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + process.env.REACT_APP_GEMINI_API_KEY, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        prompt,
-        temperature: 0.7,
-        max_tokens: 50,
-        top_p: 1,
+        contents: [{ parts: [{ text: prompt }] }], // Send the prompt
       }),
     });
     const data = await response.json();
+    console.log("Gemini API Raw Response:", JSON.stringify(data, null, 2));
+
+    // Check if the response contains the expected data
     if (data && data.candidates && data.candidates.length > 0) {
-      setGeminiResponse(data.candidates[0].output);
+      const responseText = data.candidates[0].content.parts[0].text; // Extract the text portion
+      setGeminiResponse(responseText); // Set only the text response
     } else {
-      setGeminiResponse("AI response unavailable.");
+      setGeminiResponse("No valid response from the AI.");
     }
   } catch (error) {
     console.error("Error fetching AI response:", error);
@@ -124,8 +125,19 @@ const SnowSmartApp = () => {
 
           {weather && (
             <Card sx={{ backgroundColor: "#2F3136", color: "#fff", padding: "16px", borderRadius: "8px", marginTop: "20px" }}>
-              <Typography variant="h5" textAlign="center" sx={{ fontWeight: "bold" }}>
-                🌡 {weather.temperature}°C | 💨 {weather.windSpeed} m/s | ☁️ {weather.condition}
+              <Typography variant="h5" textAlign="center" sx={{ fontWeight: "bold", fontSize: "1.25rem"}}>
+                🌡 {weather.temperature}°C | ❄️ Snow: {weather.snow} cm | 🌧️ Rain: {weather.rain} mm
+              </Typography>
+              <Typography variant="h5" textAlign="center" sx={{ fontWeight: "bold", marginTop: "8px", fontSize:"1.25rem"}}>
+                {weather.condition === "Snow" ? "❄️Snowing" :
+                 weather.condition === "Rain" ? "🌧️Raining" :
+                 weather.condition === "Clear" ? "☀️Clear" :
+                 weather.condition === "Clouds" ? "☁️Cloudy" :
+                 weather.condition === "Blizzard" ? "🌨️Blizzard" :
+                 weather.condition === "Freezing Rain" ? "🥶Freezing Rain" :
+                 weather.condition === "Drizzle" ? "🌧️Drizzling" :
+                 weather.condition === "Thunderstorm" ? "⚡Thunderstorm" :
+                 weather.condition === "Mist" ? "🌫️Mist" : "☀️Clear"}
               </Typography>
             </Card>
           )}
